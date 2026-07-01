@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Manager Pro</title>
+    <title>Data Manager Pro - Share ke 2</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -26,7 +26,7 @@
         
         <header class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-3xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">DATA PRO</h1>
+                <h1 class="text-3xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">DATA PRO II</h1>
                 <p id="saveIndicator" class="text-[11px] sm:text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">
                     MENUNGGU DATA...
                 </p>
@@ -146,12 +146,12 @@
     </div>
 
     <script>
-        // --- DATA STRUCTURE MANAGEMENT V4.5 ---
+        // --- DATA STRUCTURE MANAGEMENT (PAGE 2 ISOLATED) ---
         let appState = {
             currentTab: 'rumah_tangga',
             tabs: { rumah_tangga: [], usaha_micro: [], verifikasi: [], opsi_lain: [], verif: [] },
             original: { rumah_tangga: [], usaha_micro: [], verifikasi: [], opsi_lain: [], verif: [] },
-            notes: "" // Wadah global catatan yang ikut ter-export otomatis
+            notes: ""
         };
 
         const categories = {
@@ -177,7 +177,8 @@
 
         // --- ENGINE LOGIC ---
         function initApp() {
-            const saved = localStorage.getItem('app_state_stable_v2');
+            // Menggunakan Kunci Database Terpisah 'app_state_page2'
+            const saved = localStorage.getItem('app_state_page2');
             if (saved) { 
                 const parsed = JSON.parse(saved);
                 if (parsed.tabs) {
@@ -190,11 +191,12 @@
             initTheme();
             updateTabUI();
             checkDisplayMode();
-            notesInput.value = appState.notes || ""; // Mengisi kolom catatan saat aplikasi dimuat
+            notesInput.value = appState.notes || "";
         }
 
         function saveState() {
-            localStorage.setItem('app_state_stable_v2', JSON.stringify(appState));
+            // Menyimpan Terpisah ke 'app_state_page2' dengan tanda kurung yang lengkap
+            localStorage.setItem('app_state_page2', JSON.stringify(appState));
             updateTimestamp();
         }
 
@@ -370,7 +372,7 @@
             renderList();
         }
 
-        // --- LOGIKA TOGGLE & REALTIME CATATAN ---
+        // --- TOGGLE MEMO LOGIC ---
         document.getElementById('btnToggleNotes').onclick = () => {
             const container = document.getElementById('notesContainer');
             const isHidden = container.classList.toggle('hidden');
@@ -379,10 +381,10 @@
 
         notesInput.oninput = (e) => {
             appState.notes = e.target.value;
-            saveState(); // Otomatis tersimpan real-time ke localStorage & siap diexport kapan saja
+            saveState();
         };
 
-        // --- LOGIKA TOGGLE INPUT PENCARIAN ---
+        // --- TOGGLE SEARCH LOGIC ---
         document.getElementById('btnToggleSearch').onclick = () => {
             const container = document.getElementById('searchContainer');
             const isHidden = container.classList.toggle('hidden');
@@ -420,7 +422,7 @@
 
         // --- ARCHIVE ENGINE ---
         document.getElementById('btnExport').onclick = () => {
-            const dataStr = localStorage.getItem('app_state_stable_v2');
+            const dataStr = localStorage.getItem('app_state_page2');
             if (!dataStr) {
                 alert('Gagal mengekspor: Tidak ada data aktif di dalam sistem.');
                 return;
@@ -429,7 +431,7 @@
             const url = URL.createObjectURL(blob);
             const anchor = document.createElement('a');
             anchor.href = url;
-            anchor.download = `DATAPRO_BACKUP_${getTodayString()}.json`;
+            anchor.download = `DATAPRO2_BACKUP_${getTodayString()}.json`;
             document.body.appendChild(anchor);
             anchor.click();
             document.body.removeChild(anchor);
@@ -457,7 +459,7 @@
                         if (parsedData.notes === undefined) parsedData.notes = "";
                         
                         appState = parsedData;
-                        notesInput.value = appState.notes; // Memulihkan teks catatan dari file json
+                        notesInput.value = appState.notes;
                         saveState();
                         closeAndClearSearch();
                         checkDisplayMode();
@@ -508,7 +510,7 @@
             }
         };
 
-        // --- GRAPHICS & CONTRAST ---
+        // --- GRAPHICS & CONTRAST (ISOLATED) ---
         function initTheme() {
             const currentTheme = localStorage.getItem('theme_page2') || 'dark';
             if (currentTheme === 'dark') { htmlEl.classList.add('dark'); } 
@@ -524,7 +526,7 @@
 
         document.getElementById('themeToggle').onclick = () => {
             const isDark = htmlEl.classList.toggle('dark');
-            localStorage.setItem('theme_page2, isDark ? 'dark' : 'light');
+            localStorage.setItem('theme_page2', isDark ? 'dark' : 'light');
             updateThemeIcon();
         };
 
